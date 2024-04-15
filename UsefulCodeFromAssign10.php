@@ -16,13 +16,13 @@
 
     <?php
     try {
-        handleDatabaseCommunication();
+        $pdo = connectToDatabase();
+        handleDatabaseCommunication($pdo);
     } catch(PDOException $e) {
         echo "Error: " . $e->getMessage();
     }
 
-    function handleDatabaseCommunication() {
-        connectToDatabase();
+    function handleDatabaseCommunication($pdo) {
         if (userSubmittedForm("show_suppliers")) {
             createTable($pdo, "SELECT * FROM S");
         }
@@ -30,7 +30,7 @@
             createTable($pdo, "SELECT * FROM P");
         }
         if (userSubmittedForm("select_part")) {
-            createTable($pdo, "SELECT S.S, S.SNAME, SP.QTY FROM S JOIN SP ON S.S = SP.S WHERE SP.P = ?", array("part_select"))
+            createTable($pdo, "SELECT S.S, S.SNAME, SP.QTY FROM S JOIN SP ON S.S = SP.S WHERE SP.P = ?", array("part_select"));
         }
         if (userSubmittedForm("select_supplier")) {
             $sql = "SELECT P.P, P.PNAME, SP.QTY
@@ -67,6 +67,7 @@
         $dsn = "mysql:host=courses;dbname=z2003741";
         $pdo = new PDO($dsn, $username, $password);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        return $pdo;
     }
 
     function userSubmittedForm($formName) {
@@ -74,12 +75,9 @@
     }
 
     function createTable($pdo, $sql, $sqlParameters=array()) {
-        foreach ($sqlParameters as $param) {
-            $param = $_POST[$param];
-        }
         $query = runSql($pdo, $sql, $sqlParameters);
-
         $results = $query->fetchAll(PDO::FETCH_NUM);
+
         echo '<table border="1">';
         echo '<tr>';
         $columnCount = $query->columnCount();
@@ -97,7 +95,11 @@
         echo "</table>";
     }
 
+    //returns query object which can be used to extract results of running $sql
     function runSql($pdo, $sql, $sqlParameters=array()) {
+        for ($i = 0; $i < count($sqlParameters); $i++) {
+            $sqlParameters[$i] = $_POST[$sqlParameters[$i]];
+        }
         if (!$sqlParameters) {
             $query = $pdo->query($sql);
         } else {
@@ -109,53 +111,53 @@
 
     ?>
 
+    <?php 
+    function echoPartsAsOptions($pdo) {
+        $parts = runSql($pdo, "SELECT * FROM P")->fetchAll();
+        foreach ($parts as $part) {
+            echo "<option value='".$part[0]."'>".$part[1]."</option>";
+        }
+    }
+    function echoSuppliersAsOptions($pdo) {
+        $suppliers = runSql($pdo, "SELECT * FROM S")->fetchAll();
+        foreach ($suppliers as $supplier) {
+            echo "<option value='".$supplier[0]."'>".$supplier[1]."</option>";
+        }
+    }
+    ?>
    <!-- Sets up a form that will submit data to the PHP script that is generated using the HTTP POST method -->
     <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-        <input type="submit" name="show_suppliers" value="Show All Suppliers">
-        <input type="submit" name="show_parts" value="Show All Parts">
-            <h2>View Suppliers for a Part</h2>
-            <label for="part_select">Select a Part:</label>
-            <select name="part_select" id="part_select">
-                <?php
-                $parts = getAllParts($pdo);
-                foreach ($parts as $part) {
-                    echo "<option value='".$part['P']."'>".$part['PNAME']."</option>";
-                }
-                ?>
-            </select>
-            <input type="submit" name="select_part" value="View Suppliers">
+        <input type="submit" name="show_suppliers" value="Show All Suppliers" />
+        <input type="submit" name="show_parts" value="Show All Parts" />
+        <h2>View Suppliers for a Part</h2>
+        <label for="part_select">Select a Part:</label>
+        <select name="part_select" id="part_select">
+            <?php
+            echoPartsAsOptions($pdo);
+            ?>
+        </select>
+        <input type="submit" name="select_part" value="View Suppliers" />
         <h2>View Parts for a Supplier</h2>
         <label for="supplier_select">Select a Supplier:</label>
         <select name="supplier_select" id="supplier_select">
             <?php
-            $suppliers = getAllSuppliers($pdo);
-            foreach ($suppliers as $supplier) {
-                echo "<option value='".$supplier['S']."'>".$supplier['SNAME']."</option>";
-            }
+            echoSuppliersAsOptions($pdo);
             ?>
         </select>
-        <input type="submit" name="select_supplier" value="View Parts">
+        <input type="submit" name="select_supplier" value="View Parts" />
 
         <h2>Buy Parts from a Supplier</h2>
         <label for="supplier_select">Select a Supplier:</label>
         <select name="supplier_select" id="supplier_select">
             <?php
-            $stmt = $pdo->query("SELECT * FROM S");
-            $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            foreach ($suppliers as $supplier) {
-                echo "<option value='".$supplier['S']."'>".$supplier['SNAME']."</option>";
-            }
+            echoSuppliersAsOptions($pdo);
             ?>
         </select>
         <br>
         <label for="part_select">Select a Part:</label>
         <select name="part_select" id="part_select">
             <?php
-            $stmt = $pdo->query("SELECT * FROM P");
-            $parts = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            foreach ($parts as $part) {
-                echo "<option value='".$part['P']."'>".$part['PNAME']."</option>";
-            }
+            echoPartsAsOptions($pdo);
             ?>
         </select>
         <br>
@@ -163,23 +165,23 @@
         <!--the min and required attributes to denote the minimum value that can be in a input field
             the required attribute will not allow the data to submit if there is nothing to submit. h
             hence to indicate the user to give data-->
-        <input type="number" name="quantity" id="quantity" min="1" required>
-        <input type="submit" name="buy_parts" value="Buy Parts">
+        <input type="number" name="quantity" id="quantity" min="1" required />
+        <input type="submit" name="buy_parts" value="Buy Parts" />
 
         <h2>Add a New Part</h2>
         <label for="partnum">Part Number:</label>
-        <input type="text" name="partnum" id="partnum" required>
+        <input type="text" name="partnum" id="partnum" required />
         <br>
         <label for="pname">Part Name:</label>
-        <input type="text" name="pname" id="pname" required>
+        <input type="text" name="pname" id="pname" required />
         <br>
         <label for="color">Color:</label>
-        <input type="text" name="color" id="color" required>
+        <input type="text" name="color" id="color" required />
         <br>
         <label for="weight">Weight:</label>
-        <input type="text" name="weight" id="weight" required>
+        <input type="text" name="weight" id="weight" required />
         <br>
-        <input type="submit" name="add_part" value="Add Part">
+        <input type="submit" name="add_part" value="Add Part" />
     <h2>Supplier and Part Information</h2>
     <label for="supplier">Select a Supplier:</label>
     <select name="supplier" id="supplier">
@@ -200,8 +202,8 @@
         ?>
     </select><br><br>
     <label for="quantity">Quantity:</label>
-    <input type="number" name="quantity" id="quantity" min="1" required><br><br>
-    <input type="submit" name="submit" value="Submit">
+    <input type="number" name="quantity" id="quantity" min="1" required /><br><br>
+    <input type="submit" name="submit" value="Submit" />
 </form>
 </body>
 </html>
