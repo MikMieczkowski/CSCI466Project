@@ -17,7 +17,6 @@
     <?php
     //  PDO connection
     $username = "z2003741";
-    $password = "2003Jan28";
     try {
         $dsn = "mysql:host=courses;dbname=z2003741";
         $pdo = new PDO($dsn, $username, $password);
