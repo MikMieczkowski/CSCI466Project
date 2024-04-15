@@ -30,7 +30,7 @@
             createTable($pdo, "SELECT * FROM P");
         }
         if (userSubmittedForm("select_part")) {
-            createTable($pdo, "SELECT S.S, S.SNAME, SP.QTY FROM S JOIN SP ON S.S = SP.S WHERE SP.P = ?", "part_select")
+            createTable($pdo, "SELECT S.S, S.SNAME, SP.QTY FROM S JOIN SP ON S.S = SP.S WHERE SP.P = ?", array("part_select"))
         }
         if (userSubmittedForm("select_supplier")) {
             $sql = "SELECT P.P, P.PNAME, SP.QTY
@@ -40,7 +40,7 @@
                                    FROM P
                                    JOIN SP ON P.P = SP.P
                                    WHERE SP.S = :selected_supplier";
-            createTable($pdo, $sql, "supplier_select");
+            createTable($pdo, $sql, array("supplier_select"));
         }
         if (userSubmittedForm("buy_parts")) {
             runSql($pdo, "UPDATE SP SET QTY = QTY - ? WHERE S = ? AND P = ?", array("supplier_select", "part_select", "quantity"));
@@ -50,7 +50,7 @@
             runSql($pdo, "INSERT INTO P (P, PNAME, COLOR, WEIGHT) VALUES (?, ?, ?, ?)", array("partnum", "pname", "color", "weight"));
             echo "Part added successfully!";
         }
-        // Handle DB of SP Submission
+        // Handle insertion of data into SP table
         if (userSubmittedForm("submit")) {
             //If query returned by runSQL is empty, $rowExists will be false, otherwise it will be true.
             $rowExists = runSql($pdo, "SELECT * FROM SP WHERE S = ? AND P = ?", array("supplier", "part"));
@@ -66,7 +66,7 @@
 
     function connectToDatabase() {
         $username = "z2003741";
-        //Password removed from this file for security reasons
+        $password = "2003Jan28";
         $dsn = "mysql:host=courses;dbname=z2003741";
         $pdo = new PDO($dsn, $username, $password);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
