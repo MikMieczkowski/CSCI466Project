@@ -36,10 +36,7 @@
             $sql = "SELECT P.P, P.PNAME, SP.QTY
                                    FROM P
                                    JOIN SP ON P.P = SP.P
-                                   WHERE SP.S = :selected_supplier""SELECT P.P, P.PNAME, SP.QTY
-                                   FROM P
-                                   JOIN SP ON P.P = SP.P
-                                   WHERE SP.S = :selected_supplier";
+                                   WHERE SP.S = ?";
             createTable($pdo, $sql, array("supplier_select"));
         }
         if (userSubmittedForm("buy_parts")) {
