@@ -1,155 +1,148 @@
-CREATE TABLE `Singer` ( --(empty table)user implemented
-    `singerId` INT(20) NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(255) NOT NULL,
-    PRIMARY KEY (`id`)
+CREATE TABLE `Singer` ( /*(empty table)user implemented*/
+    singerId INT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE `Song` (
-    `songId` INT(20) NOT NULL,
-    `title` VARCHAR(255) NOT NULL,
-    `artist` VARCHAR(255) NOT NULL,
-    PRIMARY KEY (`songId`)
+    songId INT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    artist VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE 'Contributors' (
-    'contId' INT(20) NOT NULL,
-    'NAME' INT(20) NOT NULL,
-    PRIMARY KEY ('contId')
+CREATE TABLE `Contributors` (
+    contId INT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE `File` (
-    `fileId` INT(20) NOT NULL,
-    `filename` VARCHAR(255) NOT NULL,
-    PRIMARY KEY (`fileId`)
+    fileId INT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    filename VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE `Queue` (     --(empty table)user implemented
-    `singerId` INT(20) NOT NULL,
-    `songId` INT(20) NOT NULL,
-    `money` INT(20) DEFAULT NULL,
-    PRIMARY KEY ('singerId'),
-    PRIMARY KEY ('songId'),
-    FOREIGN KEY(singerId) REFERENCES Singer(singerId),
-    FOREIGN KEY(songId) REFERENCES Song(songId)
+CREATE TABLE `Queue` (     /*(empty table)user implemented*/
+    singerId INT(20) NOT NULL,
+    songId INT(20) NOT NULL,
+    money INT(20) DEFAULT NULL,
+    PRIMARY KEY (singerId, songId),
+    FOREIGN KEY (singerId) REFERENCES Singer(singerId),
+    FOREIGN KEY (songId) REFERENCES Song(songId)
 );
 
 CREATE TABLE `Feature` (
-    `songId` INT(20) NOT NULL,
-    `contId` INT(20) NOT NULL,
-    `role` VARCHAR(255) NOT NULL,
-    PRIMARY KEY ('songId'),
-    PRIMARY KEY ('contId'),
-    FOREIGN KEY(songId) REFERENCES Song(songId),
-    FOREIGN KEY(contId) REFERENCES Contributors(contId)
+    songId INT(20) NOT NULL,
+    contId INT(20) NOT NULL,
+    role VARCHAR(255) NOT NULL,
+    PRIMARY KEY (songId, contId),
+    FOREIGN KEY (songId) REFERENCES Song(songId),
+    FOREIGN KEY (contId) REFERENCES Contributors(contId)
 );
 
 CREATE TABLE `Stored` (
-    `songId` INT(20) NOT NULL,
-    `fileId` INT(20) NOT NULL,
-    `version` VARCHAR(255) NOT NULL,
-    PRIMARY KEY ('songId'),
-    PRIMARY KEY ('fileId'),
-    FOREIGN KEY(songId) REFERENCES Song(songId),
-    FOREIGN KEY(fileId) REFERENCES File(fileId)
+    songId INT(20) NOT NULL,
+    fileId INT(20) NOT NULL,
+    version VARCHAR(255) NOT NULL,
+    PRIMARY KEY (songId, fileId),
+    FOREIGN KEY (songId) REFERENCES Song(songId),
+    FOREIGN KEY (fileId) REFERENCES `File`(fileId)
 );
 
-INSERT INTO Song(songId, title, artitst) VALUES (1, "Hey Jude", "The Beatles");
+INSERT INTO Song(songId, title, artist) VALUES (1, "Hey Jude", "The Beatles");
 INSERT INTO Contributors(contId, name) VALUES (1, "John Lennon");
 INSERT INTO Contributors(contId, name) VALUES (2, "Paul McCartney");
 INSERT INTO Contributors(contId, name) VALUES (3, "George Harrison");
 
-INSERT INTO Song(songId, title, artitst) VALUES (2, "Thriller", "Michael Jackson");
+INSERT INTO Song(songId, title, artist) VALUES (2, "Thriller", "Michael Jackson");
 INSERT INTO Contributors(contId, name) VALUES (4, "Michael Jackson");
 
-INSERT INTO Song(songId, title, artitst) VALUES (3, "Bohemian Rhapsody", "Queen");
+INSERT INTO Song(songId, title, artist) VALUES (3, "Bohemian Rhapsody", "Queen");
 INSERT INTO Contributors(contId, name) VALUES (5, "Freddie Mercury");
 INSERT INTO Contributors(contId, name) VALUES (6, "Brian May");
 
-INSERT INTO Song(songId, title, artitst) VALUES (4, "Hello", "Adele");
+INSERT INTO Song(songId, title, artist) VALUES (4, "Hello", "Adele");
 
-INSERT INTO Song(songId, title, artitst) VALUES (5, "Shape of You", "Ed Sheeran");
+INSERT INTO Song(songId, title, artist) VALUES (5, "Shape of You", "Ed Sheeran");
 INSERT INTO Contributors(contId, name) VALUES (7, "Ed Sheeran");
 
-INSERT INTO Song(songId, title, artitst) VALUES (6, "Shake It Off", "Taylor Swift");
+INSERT INTO Song(songId, title, artist) VALUES (6, "Shake It Off", "Taylor Swift");
 INSERT INTO Contributors(contId, name) VALUES (8, "Taylor Swift");
 
-INSERT INTO Song(songId, title, artitst) VALUES (7, "Can't Help Falling in Love", "Elvis Presley");
+INSERT INTO Song(songId, title, artist) VALUES (7, "Can't Help Falling in Love", "Elvis Presley");
 INSERT INTO Contributors(contId, name) VALUES (9, "Elvis Presley");
 
-INSERT INTO Song(songId, title, artitst) VALUES (8, "Single Ladies (Put a Ring on It)", "Beyoncé");
+INSERT INTO Song(songId, title, artist) VALUES (8, "Single Ladies (Put a Ring on It)", "Beyoncé");
 
-INSERT INTO Song(songId, title, artitst) VALUES (9, "Umbrella", "Rihanna");
+INSERT INTO Song(songId, title, artist) VALUES (9, "Umbrella", "Rihanna");
 
-INSERT INTO Song(songId, title, artitst) VALUES (10, "Just the Way You Are", "Bruno Mars");
+INSERT INTO Song(songId, title, artist) VALUES (10, "Just the Way You Are", "Bruno Mars");
 INSERT INTO Contributors(contId, name) VALUES (10, "Bruno Mars");
 
-INSERT INTO Song(songId, title, artitst) VALUES (11, "Firework", "Katy Perry");
+INSERT INTO Song(songId, title, artist) VALUES (11, "Firework", "Katy Perry");
 INSERT INTO Contributors(contId, name) VALUES (11, "Katy Perry");
 
-INSERT INTO Song(songId, title, artitst) VALUES (12, "Viva la Vida", "Coldplay");
+INSERT INTO Song(songId, title, artist) VALUES (12, "Viva la Vida", "Coldplay");
 INSERT INTO Contributors(contId, name) VALUES (12, "Chris Martin");
 
-INSERT INTO Song(songId, title, artitst) VALUES (13, "Lose Yourself", "Eminem");
+INSERT INTO Song(songId, title, artist) VALUES (13, "Lose Yourself", "Eminem");
 
-INSERT INTO Song(songId, title, artitst) VALUES (14, "Moves Like Jagger", "Maroon 5");
+INSERT INTO Song(songId, title, artist) VALUES (14, "Moves Like Jagger", "Maroon 5");
 INSERT INTO Contributors(contId, name) VALUES (13, "Adam Levine");
 INSERT INTO Contributors(contId, name) VALUES (14, "James Valentine");
 
-INSERT INTO Song(songId, title, artitst) VALUES (15, "Thank U, Next", "Ariana Grande");
+INSERT INTO Song(songId, title, artist) VALUES (15, "Thank U, Next", "Ariana Grande");
 INSERT INTO Contributors(contId, name) VALUES (15, "Ariana Grande");
 
-INSERT INTO Song(songId, title, artitst) VALUES (16, "Sorry", "Justin Bieber");
+INSERT INTO Song(songId, title, artist) VALUES (16, "Sorry", "Justin Bieber");
 INSERT INTO Contributors(contId, name) VALUES (16, "Justin Bieber");
 
-INSERT INTO Song(songId, title, artitst) VALUES (17, "In My Feelings", "Drake");
+INSERT INTO Song(songId, title, artist) VALUES (17, "In My Feelings", "Drake");
 
-INSERT INTO Song(songId, title, artitst) VALUES (18, "I Will Always Love You", "Whitney Houston");
+INSERT INTO Song(songId, title, artist) VALUES (18, "I Will Always Love You", "Whitney Houston");
 INSERT INTO Contributors(contId, name) VALUES (17, "Whitney Houston");
 
-INSERT INTO Song(songId, title, artitst) VALUES (19, "Purple Rain", "Prince");
+INSERT INTO Song(songId, title, artist) VALUES (19, "Purple Rain", "Prince");
 
-INSERT INTO Song(songId, title, artitst) VALUES (20, "(I Can't Get No) Satisfaction", "The Rolling Stones");
+INSERT INTO Song(songId, title, artist) VALUES (20, "(I Can't Get No) Satisfaction", "The Rolling Stones");
 INSERT INTO Contributors(contId, name) VALUES (18, "Mick Jagger");
 INSERT INTO Contributors(contId, name) VALUES (19, "Keith Richards");
 
-INSERT INTO Song(songId, title, artitst) VALUES (21, "No Woman, No Cry", "Bob Marley");
+INSERT INTO Song(songId, title, artist) VALUES (21, "No Woman, No Cry", "Bob Marley");
 INSERT INTO Contributors(contId, name) VALUES (20, "Bob Marley");
 
-INSERT INTO Song(songId, title, artitst) VALUES (22, "Like a Prayer", "Madonna");
+INSERT INTO Song(songId, title, artist) VALUES (22, "Like a Prayer", "Madonna");
 
-INSERT INTO Song(songId, title, artitst) VALUES (23, "Your Song", "Elton John");
+INSERT INTO Song(songId, title, artist) VALUES (23, "Your Song", "Elton John");
 INSERT INTO Contributors(contId, name) VALUES (21, "Elton John");
 
-INSERT INTO Song(songId, title, artitst) VALUES (24, "With or Without You", "U2");
+INSERT INTO Song(songId, title, artist) VALUES (24, "With or Without You", "U2");
 
-INSERT INTO Song(songId, title, artitst) VALUES (25, "Blinding Lights", "The Weeknd");
+INSERT INTO Song(songId, title, artist) VALUES (25, "Blinding Lights", "The Weeknd");
 INSERT INTO Contributors(contId, name) VALUES (22, "The Weeknd");
 
-INSERT INTO Song(songId, title, artitst) VALUES (26, "Comfortably Numb", "Pink Floyd");
+INSERT INTO Song(songId, title, artist) VALUES (26, "Comfortably Numb", "Pink Floyd");
 INSERT INTO Contributors(contId, name) VALUES (23, "Roger Waters");
 INSERT INTO Contributors(contId, name) VALUES (24, "David Gilmour");
 
-INSERT INTO Song(songId, title, artitst) VALUES (27, "Dreams", "Fleetwood Mac");
+INSERT INTO Song(songId, title, artist) VALUES (27, "Dreams", "Fleetwood Mac");
 INSERT INTO Contributors(contId, name) VALUES (25, "Stevie Nicks");
 INSERT INTO Contributors(contId, name) VALUES (26, "Lindsey Buckingham");
 
-INSERT INTO Song(songId, title, artitst) VALUES (28, "Smells Like Teen Spirit", "Nirvana");
+INSERT INTO Song(songId, title, artist) VALUES (28, "Smells Like Teen Spirit", "Nirvana");
 INSERT INTO Contributors(contId, name) VALUES (27, "Kurt Cobain");
 
-INSERT INTO Song(songId, title, artitst) VALUES (29, "Sweet Child o' Mine", "Guns N' Roses");
+INSERT INTO Song(songId, title, artist) VALUES (29, "Sweet Child o' Mine", "Guns N' Roses");
 INSERT INTO Contributors(contId, name) VALUES (28, "Axl Rose");
 
-INSERT INTO Song(songId, title, artitst) VALUES (30, "Stairway to Heaven", "Led Zeppelin");
+INSERT INTO Song(songId, title, artist) VALUES (30, "Stairway to Heaven", "Led Zeppelin");
 INSERT INTO Contributors(contId, name) VALUES (29, "Robert Plant");
 INSERT INTO Contributors(contId, name) VALUES (30, "Jimmy Page");
 
-INSERT INTO Song(songId, title, artitst) VALUES (31, "Every Breath You Take", "The Police");
+INSERT INTO Song(songId, title, artist) VALUES (31, "Every Breath You Take", "The Police");
 INSERT INTO Contributors(contId, name) VALUES (31, "Andy Summers");
 
-INSERT INTO Song(songId, title, artitst) VALUES (32, "Under the Bridge", "Red Hot Chili Peppers");
+INSERT INTO Song(songId, title, artist) VALUES (32, "Under the Bridge", "Red Hot Chili Peppers");
 INSERT INTO Contributors(contId, name) VALUES (32, "Anthony Kiedis");
 
-INSERT INTO Song(songId, title, artitst) VALUES (33, "Numb", "Linkin Park");
+INSERT INTO Song(songId, title, artist) VALUES (33, "Numb", "Linkin Park");
 INSERT INTO Contributors(contId, name) VALUES (33, "Chester Bennington");
 INSERT INTO Contributors(contId, name) VALUES (34, "Mike Shinoda");
 
