@@ -22,25 +22,8 @@
     <p>CSCI 466 Project by Jarius Ransom, Kai Danan, and Mik Mieczkowski</p>
     <p>&nbsp;</p>
     <form method="POST">
-        <p>First Name &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;    Last Name </p>
-        <p>
-            <input type="text" name="firstName" \>
-            <input type="text" name="lastName" \> 
-        </p>
-        <p>To have your request be played sooner, choose a donation amount! Singer with the highest donation will get their song played sooner, but the DJ will make sure to get singers without donations their spotlight too.</p> 
-        <p>
-            <select name="money" id="money">
-                <option value="None">None</option>
-                <option value="5">$5</option>
-                <option value="10">$10</option>
-                <option value="25">$25</option>
-                <option value="50">$50</option>
-            </select>
-        </p>
-        <input type="submit" name="sub" value="Sign up" \><p/>
-        <p>Search for a song:</p><p> <input type="text" name="songSearch" \></p>
 
-    </form> 
+
 <?php
 
 try {
@@ -62,13 +45,60 @@ function connectToDatabase() {
 
 // Main function, will create the html text that this php block is meant to create.
 function createHTML($pdo) {
+    if (elementSubmitted("next")) {
+        echo '<p>Version</p><p>';
+        createSelectFromSQL($pdo, "versionSelect", 3, 1, " ", "SELECT Title, Version FROM Song WHERE Title = ?", array("songSelect"));  
+        echo '</p>';
+        if (elementSubmitted("money", "None")) {
+            echo '<p>Payment Information: </p>';
+            echo '<p>Card Number: <input type="text" readonly name="creditCardInfo" value="Not a real form" size=\></p>'; 
+            echo '<p>Security Code: <input type="text" readonly name="creditCardInfo" value="Not a real form" \></p>'; 
+            echo '<p>Cardholder Name: <input type="text" readonly name="creditCardInfo" value="Not a real form" \></p>'; 
+
+        }
+        echo '<input type="submit" name="sub" value="Sign up" \><p/>';
+        if (elementSubmitted("sub")) {
+            runSQL($pdo, "INSERT INTO Singer(name) VALUES (\"? ?\")", array("firstName", "lastName"));
+            $singerId = $pdo->lastInsertId();
+            runSQL($pdo, "INSERT INTO Queue VALUES (
+                $singerId,
+                (SELECT songId FROM Song WHERE Title = \"?\" AND Version = \"?\"),
+                ?)", array("songSelect", "versionSelect", "money"));
+        }
+    } else {
+        echo '
+        <p>First Name &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;    Last Name </p>
+        <p>
+            <input type="text" name="firstName" \>
+            <input type="text" name="lastName" \> 
+        </p>
+        <p>To have your request be played sooner, choose a donation amount! Singer with the highest donation will get their song played sooner, but the DJ will make sure to get singers without donations their spotlight too.</p> 
+        <p>
+            <select name="money" id="money">
+                <option value="None">None</option>
+                <option value="5">$5</option>
+                <option value="10">$10</option>
+                <option value="25">$25</option>
+                <option value="50">$50</option>
+            </select>
+        </p>
+        <p> <input type="text" name="songSearch" placeholder="Search for song by Artist, Title, or Contributor" size="40"\></p>
+        ';
+        createSongSelect($pdo);
+        echo '<p><input type="submit" name="next" value="Next" \></p><p/>';
+    }
+}
+
+//Creates the songSelect html element, implementing the search functionality from the songSearch element.
+function createSongSelect($pdo) {
     if (elementSubmitted("songSearch")) {
-        $sql = "SELECT title, artist FROM Song WHERE title LIKE CONCAT('%',?,'%') OR artist LIKE CONCAT('%', ?, '%')";
-        createSelectFromSQL($pdo, "songSelect", " by ", $sql, array(songSearch, songSearch));
+        $sql = "SELECT title, artist FROM Song JOIN Feature ON Song.songId = Feature.songId JOIN Contributors ON Contributors.Contributor_id = Feature.Contributor_id WHERE title LIKE CONCAT('%',?,'%') OR artist LIKE CONCAT('%', ?, '%') OR Name LIKE CONCAT('%', ?, '%')";
+        $params = array("songSearch", "songSearch", "songSearch");
     } else {
         $sql = "SELECT title, artist FROM Song";
-        createSelectFromSQL($pdo, "songSelect", " by ", $sql);
+        $params = array();
     }
+    createSelectFromSQL($pdo, "songSelect", 10, 0, " by ", $sql, $params);
 }
 
 /* Creates a table in the html from MariaDB output
@@ -98,24 +128,33 @@ function createTableFromSQL($pdo, $sql, $sqlParameters=array()) {
     echo "</table>";
 }
 
-function createSelectFromSQL($pdo, $name, $separator, $sql, $sqlParameters=array()) {
-    echo "hi";
+/* Creates an HTML select element with name $name, with the value of each option being row data separated by $separator.
+ * @param $size The value for the size attribute of the select element
+ * @param $optionValue An integer that describes which column of the sql output should be the value attribute of the option elements
+ */
+function createSelectFromSQL($pdo, $name, $size, $optionValue, $separator, $sql, $sqlParameters=array()) {
     $pdoStatement = runSQL($pdo, $sql, $sqlParameters);
     $rows = $pdoStatement->fetchAll(PDO::FETCH_NUM);
-    print_r($rows);
 
-    echo '<select name=$name size= "10">';
+    echo "<select name=$name size= \"$size\">";
 
+    $columnCount = $pdoStatement->columnCount();
     foreach ($rows as $row) {
         echo "<option value = \"" . $row[0] . "\">";
-        echo $row[0] . $separator . $row[1];
+        for($i = 0; $i < $columnCount; $i++) {
+            echo $row[$i];
+            if ($i != $columnCount - 1) {
+                echo $separator;
+            }
+        }
         echo "</option>";
     }
     echo "</select>";
 }
 
-function elementSubmitted($name) {
-    return isset($_POST[$name]);
+//returns true if a html element with name $name is not empty or is not $default
+function elementSubmitted($name, $default="") {
+    return isset($_POST[$name]) && $_POST[$name] !== $default;
 }
 
 /* Executes an SQL statement
@@ -136,8 +175,8 @@ function runSQL($pdo, $sql, $sqlParameters=array()) {
     }
     return $pdoStatement;
 }
+echo "end php";
 ?>
-
-
+</form> 
 </body>
 </html>

@@ -41,7 +41,6 @@ CREATE TABLE `Queue` (
 CREATE TABLE `Feature` (
     `songId` INT(20) NOT NULL,
     `Contributor_id` INT(20) NOT NULL,
-    `role` VARCHAR(255) NOT NULL,
     PRIMARY KEY (`songId`, `Contributor_id`),
     FOREIGN KEY (`songId`) REFERENCES `Song` (`songId`),
     FOREIGN KEY (`Contributor_id`) REFERENCES `Contributors` (`Contributor_id`)
@@ -57,7 +56,7 @@ INSERT INTO Contributors(Contributor_id, Name) VALUES (2, " Michael Jackson (Lea
 ");
 
 INSERT INTO Song(songId, Title, File, Artist, Version) VALUES (3, "Bohemian Rhapsody", "Bohemian Rhapsody-Orginal.mp4", " Queen", "Orginal");
-INSERT INTO Song(songId, Title, Artist, Version) VALUES (4, "Bohemian Rhapsody", "Bohemian Rhapsody-Remix.mp4", " Queen", "Remix");
+INSERT INTO Song(songId, Title, File, Artist, Version) VALUES (4, "Bohemian Rhapsody", "Bohemian Rhapsody-Remix.mp4", " Queen", "Remix");
 INSERT INTO Contributors(Contributor_id, Name) VALUES (3, " Freddie Mercury (Lead Vocalist, Pianist, Songwriter), Brian May (Lead Guitarist, Songwriter)
 ");
 
@@ -66,12 +65,12 @@ INSERT INTO Contributors(Contributor_id, Name) VALUES (4, " Adele (Lead Vocalist
 ");
 
 INSERT INTO Song(songId, Title, File, Artist, Version) VALUES (6, "Shape of You", "Shape of You-Orginal.mp4", " Ed Sheeran", "Orginal");
-INSERT INTO Song(songId, Title, Artist, Version) VALUES (7, "Shape of You", "Shape of You-Acoustic.mp4", " Ed Sheeran", "Acoustic");
+INSERT INTO Song(songId, Title, File, Artist, Version) VALUES (7, "Shape of You", "Shape of You-Acoustic.mp4", " Ed Sheeran", "Acoustic");
 INSERT INTO Contributors(Contributor_id, Name) VALUES (5, " Ed Sheeran (Lead Vocalist, Guitarist, Songwriter)
 ");
 
 INSERT INTO Song(songId, Title, File, Artist, Version) VALUES (8, "Shake It Off", "Shake It Off-Orginal.mp4", " Taylor Swift", "Orginal");
-INSERT INTO Song(songId, Title, Artist, Version) VALUES (9, "Shake It Off", "Shake It Off-Clean.mp4", " Taylor Swift", "Clean");
+INSERT INTO Song(songId, Title, File, Artist, Version) VALUES (9, "Shake It Off", "Shake It Off-Clean.mp4", " Taylor Swift", "Clean");
 INSERT INTO Contributors(Contributor_id, Name) VALUES (6, " Taylor Swift (Lead Vocalist, Songwriter)
 ");
 
@@ -144,7 +143,7 @@ INSERT INTO Contributors(Contributor_id, Name) VALUES (23, " Elton John (Lead Vo
 ");
 
 INSERT INTO Song(songId, Title, File, Artist, Version) VALUES (27, "With or Without You", "With or Without You-Orginal.mp4", " U2", "Orginal");
-INSERT INTO Song(songId, Title, Artist, Version) VALUES (28, "With or Without You", "With or Without You-Remix.mp4", " U2", "Remix");
+INSERT INTO Song(songId, Title, File, Artist, Version) VALUES (28, "With or Without You", "With or Without You-Remix.mp4", " U2", "Remix");
 INSERT INTO Contributors(Contributor_id, Name) VALUES (24, " Bono (Lead Vocalist, Songwriter)
 ");
 
@@ -173,7 +172,7 @@ INSERT INTO Contributors(Contributor_id, Name) VALUES (30, " Robert Plant (Lead 
 ");
 
 INSERT INTO Song(songId, Title, File, Artist, Version) VALUES (35, "Every Breath You Take", "Every Breath You Take-Orginal.mp4", " The Police", "Orginal");
-INSERT INTO Song(songId, Title, Artist, Version) VALUES (36, "Every Breath You Take", "Every Breath You Take-Remix.mp4", " The Police", "Remix");
+INSERT INTO Song(songId, Title, File, Artist, Version) VALUES (36, "Every Breath You Take", "Every Breath You Take-Remix.mp4", " The Police", "Remix");
 INSERT INTO Contributors(Contributor_id, Name) VALUES (31, " Sting (Lead Vocalist, Bassist, Songwriter), Andy Summers (Guitarist)
 ");
 
@@ -183,3 +182,40 @@ INSERT INTO Contributors(Contributor_id, Name) VALUES (32, " Anthony Kiedis (Lea
 
 INSERT INTO Song(songId, Title, File, Artist, Version) VALUES (38, "Numb", "Numb-Orginal.mp4", " Linkin Park", "Orginal");
 INSERT INTO Contributors(Contributor_id, Name) VALUES (33, " Chester Bennington (Lead Vocalist, Songwriter), Mike Shinoda (Rapper, Songwriter)");
+
+
+INSERT INTO Feature VALUES (1, 1);
+INSERT INTO Feature VALUES (2, 2);
+INSERT INTO Feature VALUES (3, 3);
+INSERT INTO Feature VALUES (4, 3);
+INSERT INTO Feature VALUES (5, 4);
+INSERT INTO Feature VALUES (6, 5);
+INSERT INTO Feature VALUES (7, 5);
+INSERT INTO Feature VALUES (11, 8);
+INSERT INTO Feature VALUES (12, 9);
+INSERT INTO Feature VALUES (13, 10);
+INSERT INTO Feature VALUES (14, 11);
+INSERT INTO Feature VALUES (15, 12);
+INSERT INTO Feature VALUES (16, 13);
+INSERT INTO Feature VALUES (17, 14);
+INSERT INTO Feature VALUES (18, 15);
+INSERT INTO Feature VALUES (19, 16);
+INSERT INTO Feature VALUES (20, 17);
+INSERT INTO Feature VALUES (21, 18);
+INSERT INTO Feature VALUES (22, 19);
+INSERT INTO Feature VALUES (23, 20);
+INSERT INTO Feature VALUES (24, 21);
+INSERT INTO Feature VALUES (25, 22);
+INSERT INTO Feature VALUES (26, 23);
+INSERT INTO Feature VALUES (27, 24);
+INSERT INTO Feature VALUES (28, 24);
+INSERT INTO Feature VALUES (29, 25);
+INSERT INTO Feature VALUES (30, 26);
+INSERT INTO Feature VALUES (31, 27);
+INSERT INTO Feature VALUES (32, 28);
+INSERT INTO Feature VALUES (33, 29);
+INSERT INTO Feature VALUES (34, 30);
+INSERT INTO Feature VALUES (35, 31);
+INSERT INTO Feature VALUES (36, 31);
+INSERT INTO Feature VALUES (37, 32);
+INSERT INTO Feature VALUES (38, 33);
