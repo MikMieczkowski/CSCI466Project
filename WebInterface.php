@@ -45,52 +45,81 @@ function connectToDatabase() {
 
 // Main function, will create the html text that this php block is meant to create.
 function createHTML($pdo) {
+    print_r($_POST);
     if (elementSubmitted("next")) {
-        echo '<p>Version</p><p>';
-        createSelectFromSQL($pdo, "versionSelect", 3, 1, " ", "SELECT Title, Version FROM Song WHERE Title = ?", array("songSelect"));  
-        echo '</p>';
-        if (elementSubmitted("money", "None")) {
-            echo '<p>Payment Information: </p>';
-            echo '<p>Card Number: <input type="text" readonly name="creditCardInfo" value="Not a real form" size=\></p>'; 
-            echo '<p>Security Code: <input type="text" readonly name="creditCardInfo" value="Not a real form" \></p>'; 
-            echo '<p>Cardholder Name: <input type="text" readonly name="creditCardInfo" value="Not a real form" \></p>'; 
-
-        }
-        echo '<input type="submit" name="sub" value="Sign up" \><p/>';
-        if (elementSubmitted("sub")) {
-            runSQL($pdo, "INSERT INTO Singer(name) VALUES (\"? ?\")", array("firstName", "lastName"));
-            $singerId = $pdo->lastInsertId();
-            runSQL($pdo, "INSERT INTO Queue VALUES (
-                $singerId,
-                (SELECT songId FROM Song WHERE Title = \"?\" AND Version = \"?\"),
-                ?)", array("songSelect", "versionSelect", "money"));
-        }
+        createForm2HTML($pdo);
+        //create hidden tags to store form data after hitting next
+        echo '<input type="hidden" name="hiddenName" value = "' . $_POST["firstName"] . ' ' . $_POST["lastName"] .  '" \>';
+        echo '<input type="hidden" name="hiddenSongSelect" value = "' . $_POST["songSelect"] . '" \>';
+        echo '<input type="hidden" name="hiddenMoney" value = "' . $_POST["money"] . '" \>';
     } else {
-        echo '
-        <p>First Name &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;    Last Name </p>
-        <p>
-            <input type="text" name="firstName" \>
-            <input type="text" name="lastName" \> 
-        </p>
-        <p>To have your request be played sooner, choose a donation amount! Singer with the highest donation will get their song played sooner, but the DJ will make sure to get singers without donations their spotlight too.</p> 
-        <p>
-            <select name="money" id="money">
-                <option value="None">None</option>
-                <option value="5">$5</option>
-                <option value="10">$10</option>
-                <option value="25">$25</option>
-                <option value="50">$50</option>
-            </select>
-        </p>
-        <p> <input type="text" name="songSearch" placeholder="Search for song by Artist, Title, or Contributor" size="40"\></p>
-        ';
-        createSongSelect($pdo);
-        echo '<p><input type="submit" name="next" value="Next" \></p><p/>';
+        createForm1HTML($pdo);
+    }
+    //handle submission of data to database
+    print_r($_POST);
+    if (elementSubmitted("sub")) {
+        runSQL($pdo, "INSERT INTO Singer(name) VALUES (?)", array("hiddenName"));
+        $singerId = $pdo->lastInsertId();
+        $moneyValue = $_POST["hiddenMoney"];
+        if ($moneyValue === "None") {
+            $moneyValue = "NULL";
+        }
+        runSQL($pdo, "INSERT INTO Queue VALUES (
+            $singerId,
+            (SELECT songId FROM Song WHERE Title = ? AND Version = ?),
+            $moneyValue)", array("hiddenSongSelect", "versionSelect"));
     }
 }
 
+function createForm1HTML($pdo) {
+    echo '
+    <p>First Name &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;    Last Name </p>
+    <p>
+        <input type="text" name="firstName" \>
+        <input type="text" name="lastName" \> 
+    </p>
+    <p>To have your request be played sooner, choose a donation amount! Singer with the highest donation will get their song played sooner, but the DJ will make sure to get singers without donations their spotlight too.</p> 
+    <p>
+        <select name="money" id="money">
+            <option value="None">None</option>
+            <option value="5">$5</option>
+            <option value="10">$10</option>
+            <option value="25">$25</option>
+            <option value="50">$50</option>
+        </select>
+    </p>
+    <p> <input type="text" name="songSearch" placeholder="Search for song by Artist, Title, or Contributor" size="40"\></p>
+    ';
+    createSongSelect($pdo);
+    echo '<p><input type="submit" name="next" value="Next" \></p><p/>';
+}
+
+function createForm2HTML($pdo) {
+
+    //create element that shows contributors
+    $sql = "SELECT DISTINCT Name FROM Song JOIN Feature ON Song.songId = Feature.songId JOIN Contributors ON Contributors.Contributor_id = Feature.Contributor_id WHERE Title = ?";
+    $stmt = runSQL($pdo, $sql, array("songSelect"));
+    $rows = $stmt->fetchAll(PDO::FETCH_NUM);
+    echo '<p><b>' . $_POST["songSelect"] . ' contributors: </b></p><p>' . $rows[0][0] . '</p>';
+
+    echo '<p><b>Version</b></p>';
+    createSelectFromSQL($pdo, "versionSelect", 3, 1, " ", "SELECT Title, Version FROM Song WHERE Title = ?", array("songSelect"));  
+
+    if (elementSubmitted("money", "None")) {
+        echo '<p>Payment Information: </p>';
+        echo '<p>Card Number: <input type="text" readonly name="creditCardInfo" value="Not a real form" size=\></p>'; 
+        echo '<p>Security Code: <input type="text" readonly name="creditCardInfo" value="Not a real form" \></p>'; 
+        echo '<p>Cardholder Name: <input type="text" readonly name="creditCardInfo" value="Not a real form" \></p>'; 
+
+    }
+
+    echo '<p><input type="submit" name="sub" value="Sign up" \><p/>';
+} 
+
+
 //Creates the songSelect html element, implementing the search functionality from the songSearch element.
 function createSongSelect($pdo) {
+    echo '<p>';
     if (elementSubmitted("songSearch")) {
         $sql = "SELECT title, artist FROM Song JOIN Feature ON Song.songId = Feature.songId JOIN Contributors ON Contributors.Contributor_id = Feature.Contributor_id WHERE title LIKE CONCAT('%',?,'%') OR artist LIKE CONCAT('%', ?, '%') OR Name LIKE CONCAT('%', ?, '%')";
         $params = array("songSearch", "songSearch", "songSearch");
@@ -99,6 +128,7 @@ function createSongSelect($pdo) {
         $params = array();
     }
     createSelectFromSQL($pdo, "songSelect", 10, 0, " by ", $sql, $params);
+    echo '</p>';
 }
 
 /* Creates a table in the html from MariaDB output
@@ -140,7 +170,7 @@ function createSelectFromSQL($pdo, $name, $size, $optionValue, $separator, $sql,
 
     $columnCount = $pdoStatement->columnCount();
     foreach ($rows as $row) {
-        echo "<option value = \"" . $row[0] . "\">";
+        echo "<option value = \"" . $row[$optionValue] . "\">";
         for($i = 0; $i < $columnCount; $i++) {
             echo $row[$i];
             if ($i != $columnCount - 1) {
